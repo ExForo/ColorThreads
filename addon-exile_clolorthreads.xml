@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<addon addon_id="exile_clolorthreads" title="[Exile] Цветные заголовки тем" version_string="1.0.0" version_id="100" url="https://xenforo.info/" install_callback_class="" install_callback_method="" uninstall_callback_class="" uninstall_callback_method="">
+  <admin_navigation/>
+  <admin_permissions/>
+  <admin_style_properties/>
+  <admin_templates>
+    <template title="option_template_colorThreads"><![CDATA[<xen:require js="js/xenforo/options_censor.js" />
+
+<xen:controlunit label="{$preparedOption.title}" hint="{$preparedOption.hint}">
+	<xen:explain>{xen:raw $preparedOption.explain}</xen:explain>
+	<xen:html>
+		<ul>
+			<xen:foreach loop="$choices" key="$counter" value="$choice">
+			<li>
+				<xen:textbox name="{$fieldPrefix}[{$preparedOption.option_id}][{$counter}][thread]" value="{$choice.thread}" placeholder="{xen:phrase exile_colorthreads_thread}" size="20" />
+				<xen:textbox name="{$fieldPrefix}[{$preparedOption.option_id}][{$counter}][color]" value="{$choice.color}" placeholder="{xen:phrase exile_colorthreads_color}" size="20" />
+			</li>
+			</xen:foreach>
+		
+			<li class="CensorWordOptionListener">
+				<xen:textbox name="{$fieldPrefix}[{$preparedOption.option_id}][{$nextCounter}][thread]" value="" placeholder="{xen:phrase exile_colorthreads_thread}" size="20" />
+				<xen:textbox name="{$fieldPrefix}[{$preparedOption.option_id}][{$nextCounter}][color]" value="" placeholder="{xen:phrase exile_colorthreads_color}" size="20" />
+			</li>
+		</ul>
+		
+		<input type="hidden" name="{$listedFieldName}" value="{$preparedOption.option_id}" />
+		{xen:raw $editLink}
+	</xen:html>
+</xen:controlunit>]]></template>
+  </admin_templates>
+  <admin_template_modifications/>
+  <code_events/>
+  <code_event_listeners>
+    <listener event_id="load_class_model" execute_order="10" callback_class="Exile_ColorThreads_Listener" callback_method="load_class" active="1" hint="" description="Extend thread model"/>
+  </code_event_listeners>
+  <cron/>
+  <email_templates/>
+  <email_template_modifications/>
+  <optiongroups>
+    <group group_id="exile_colorThreads" display_order="777" debug_only="0"/>
+    <option option_id="exile_colorThreads" edit_format="callback" data_type="array" can_backup="1" validation_class="Exile_ColorThreads_Option_ColorThreads" validation_method="verifyOption">
+      <default_value>a:0:{}</default_value>
+      <edit_format_params>Exile_ColorThreads_Option_ColorThreads::renderOption</edit_format_params>
+      <sub_options>*</sub_options>
+      <relation group_id="exile_colorThreads" display_order="1"/>
+    </option>
+  </optiongroups>
+  <permissions>
+    <permission_groups/>
+    <permissions/>
+    <interface_groups/>
+  </permissions>
+  <phrases>
+    <phrase title="exile_colorthreads_color" version_id="100" version_string="1.0.0"><![CDATA[Цвет темы (#RGB)]]></phrase>
+    <phrase title="exile_colorthreads_thread" version_id="100" version_string="1.0.0"><![CDATA[ID темы]]></phrase>
+    <phrase title="option_exile_colorThreads" version_id="100" version_string="1.0.0"><![CDATA[ID тем и их цвета]]></phrase>
+    <phrase title="option_exile_colorThreads_explain" version_id="100" version_string="1.0.0"><![CDATA[Укажите соответствия между ID темы и цветом, который у нее должен быть. Цвет темы указывается в RGB-формате вместе с символом #, в противном случае отображаться темы могут не вполне корректно. Число цветных тем, в принципе, ничем не ограничено.]]></phrase>
+    <phrase title="option_group_exile_colorThreads" version_id="100" version_string="1.0.0"><![CDATA[[Exile] Цветные заголовки тем]]></phrase>
+    <phrase title="option_group_exile_colorThreads_description" version_id="100" version_string="1.0.0"><![CDATA[Настройки дополнения цветных заголовков тем.]]></phrase>
+  </phrases>
+  <route_prefixes/>
+  <style_properties/>
+  <templates/>
+  <public_template_modifications>
+    <modification template="thread_list_item" modification_key="exile_colorThreads" description="Цветные заголовки для тем" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[class="{xen:if $thread.hasPreview, PreviewTooltip}"]]></find>
+      <replace><![CDATA[$0
+					<xen:if is="{$thread.color}">
+						style="color:{$thread.color} !important;"
+					</xen:if>]]></replace>
+    </modification>
+    <modification template="thread_view" modification_key="exile_colorThreads_thread_view" description="Цветные заголовки для тем (в самой теме)" execution_order="10" enabled="1" action="str_replace">
+      <find><![CDATA[<xen:h1>{xen:helper threadPrefix, $thread}{$thread.title}</xen:h1>]]></find>
+      <replace><![CDATA[<xen:if is="{$thread.color}">
+	<xen:h1><div style="color:{$thread.color};">{xen:helper threadPrefix, $thread}{$thread.title}</div></xen:h1>
+<xen:else />
+	<xen:h1>{xen:helper threadPrefix, $thread}{$thread.title}</xen:h1>
+</xen:if>]]></replace>
+    </modification>
+  </public_template_modifications>
+  <bb_code_media_sites/>
+  <bb_codes/>
+</addon>
